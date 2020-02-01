@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.smartdropbox.home.ui.home.HomeFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_edit_profile"
+        android:name="com.example.smartdropbox.home.ui.edit_Profile.EditProfileFragment"
+        android:label="@string/menuEditProfile"
+        tools:layout="@layout/fragment_edit_profile" />
+
+    <fragment
+        android:id="@+id/nav_installation_manual"
+        android:name="com.example.smartdropbox.home.ui.installation_Manual.InstallationManualFragment"
+        android:label="@string/menu_installation_manual"
+        tools:layout="@layout/fragment_installation_manual" />
+
+    <fragment
+        android:id="@+id/nav_call_help"
+        android:name="com.example.smartdropbox.home.ui.call_help.CallHelpFragment"
+        android:label="@string/menu_call_help"
+        tools:layout="@layout/fragment_call_help" />
+
+  <!--  <fragment
+        android:id="@+id/nav_share"
+        android:name="com.example.smartdropbox.home.ui.share.ShareFragment"
+        android:label="@string/menu_share"
+        tools:layout="@layout/fragment_share" />
+
+    <fragment
+        android:id="@+id/nav_send"
+        android:name="com.example.smartdropbox.home.ui.send.SendFragment"
+        android:label="@string/menu_send"
+        tools:layout="@layout/fragment_send" />-->
+</navigation>

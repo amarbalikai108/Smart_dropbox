@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="viewModel"
+            type="com.example.smartdropbox.home.ui.edit_Profile.EditProfileViewModel" />
+    </data>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/_20sdp"
+            android:paddingRight="@dimen/_20sdp">
+
+
+
+            <TextView
+                android:textColor="@color/app_color"
+                android:textStyle="bold"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/register"
+                android:layout_marginBottom="@dimen/_30sdp"
+                android:textSize="@dimen/_23sdp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_person"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etName"
+                    android:text="@={viewModel.registrationModel.userName}"
+                    android:inputType="textPersonName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="@string/name" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:src="@drawable/ic_phone_iphone" />
+                <EditText
+                    android:id="@+id/etPhoneNo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={viewModel.registrationModel.phoneNumber}"
+                    android:inputType="phone"
+                    android:hint="@string/phone_number" />
+
+            </LinearLayout>
+<!--
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/ic_location"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+                    android:id="@+id/etRout"
+                    android:text="@={viewModel.registrationModel.route}"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:hint="@string/route" />
+            </LinearLayout>
+-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:layout_marginBottom="@dimen/_30sdp"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:src="@drawable/ic_assignment"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <EditText
+
+                    android:id="@+id/etEmpID"
+                    android:layout_width="match_parent"
+                    android:text="@={viewModel.registrationModel.empId}"
+                    android:layout_height="wrap_content"
+
+                    android:hint="@string/emp_id" />
+            </LinearLayout>
+            <Button
+                android:id="@+id/btnRegister"
+                android:textStyle="bold"
+                android:textSize="@dimen/_16sdp"
+                android:text="@string/register"
+                android:layout_width="match_parent"
+                android:textColor="@color/white"
+                android:onClick="@{viewModel::onRegisterClick}"
+                android:background="@drawable/button_corner"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </ScrollView>
+
+</layout>

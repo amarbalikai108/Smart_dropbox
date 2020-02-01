@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+<LinearLayout
+    android:orientation="vertical" android:layout_width="match_parent"
+
+    android:layout_height="wrap_content">
+-->
+
+   <LinearLayout
+       xmlns:android="http://schemas.android.com/apk/res/android"
+
+       android:orientation="vertical"
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content">
+       <TextView
+           android:textSize="@dimen/_18sdp"
+           android:textColor="@color/green"
+           android:text="@string/suceess"
+           android:layout_margin="@dimen/_20sdp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+
+       <TextView
+           android:text="id: B827EB66A233"
+           android:id="@+id/tvBoxID"
+           android:layout_marginLeft="@dimen/_20sdp"
+           android:layout_marginBottom="@dimen/_10sdp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+    \ <TextView
+    android:id="@+id/tvUserName"
+    android:layout_marginLeft="@dimen/_20sdp"
+    android:layout_marginBottom="@dimen/_10sdp"
+    android:text="name : 1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" />
+       <TextView
+           android:id="@+id/tvCass"
+           android:layout_marginLeft="@dimen/_20sdp"
+           android:layout_marginBottom="@dimen/_10sdp"
+           android:text="class: device"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/tvAddress"
+        android:layout_marginLeft="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:text="address : 123 Street, City"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+       <TextView
+           android:id="@+id/tvLatitude"
+           android:layout_marginLeft="@dimen/_20sdp"
+           android:layout_marginBottom="@dimen/_10sdp"
+           android:text="lat : 36.458565475"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+       <TextView
+           android:id="@+id/tvLongitude"
+           android:layout_marginLeft="@dimen/_20sdp"
+           android:layout_marginBottom="@dimen/_10sdp"
+           android:text="lng: -94.458547852"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+
+
+       <Button
+           android:id="@+id/btnRegister"
+           android:layout_margin="@dimen/_20sdp"
+           android:layout_marginTop="@dimen/_20sdp"
+           android:textSize="@dimen/_16sdp"
+           android:text="@string/back"
+           android:layout_width="match_parent"
+           android:textColor="@color/white"
+
+           android:background="@drawable/button_corner"
+           android:layout_height="wrap_content" />
+   </LinearLayout>
+<!--
+</LinearLayout>-->

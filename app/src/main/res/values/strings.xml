@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">SmartDropbox</string>
+    <string name="title_activity_home_screen">HomeScreen</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menuEditProfile">Edit Profile</string>
+    <string name="menu_installation_manual">Installation Manual</string>
+    <string name="menu_call_help">Call Help</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_send">Send</string>
+    <string name="name">Name</string>
+    <string name="settings">Settings</string>
+    <string name="logout">Logout</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="route">Route</string>
+    <string name="emp_id">Employee Id</string>
+    <string name="drop_box_id">Drop box id</string>
+    <string name="device_id">Device Id</string>
+    <string name="address">Address</string>
+    <string name="register">Register</string>
+    <string name="activate">activate</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="enter_drop_box_id_here">Enter drop box id here</string>
+    <string name="installation_manual">Installation Manual</string>
+    <string name="drop_box_id_">Drop Box id</string>
+    <string name="enter_device_id_here">Enter device id here</string>
+    <string name="enter_name_here">Enter name here</string>
+    <string name="enter_address_here">Enter address here</string>
+    <string name="suceess">Success</string>
+    <string name="back">back</string>
+    <string name="user_save_successfully">User saved successfully</string>
+    <string name="app_version">Ver : </string>
+    <string name="drawer_open">Open drawer</string>
+    <string name="drawer_close">Close drawer</string>
+    <string name="please_enter_user_name">Please enter user name</string>
+    <string name="please_enter_phone_number">Please enter phone number</string>
+    <string name="please_enter_emp_id">Please enter employee id</string>
+    <string name="please_enter_box_id">Please enter box id</string>
+    <string name="please_enter_device_id">Please enter device id</string>
+    <string name="please_enter_name">Please enter name</string>
+    <string name="please_enter_address">Please enter address</string>
+    <string name="internet_not_available">Internet not available</string>
+    <string name="turn_on_location">Turn on location</string>
+    <string name="box_id">Box Id :</string>
+    <string name="user_class">Class</string>
+    <string name="lat">Lat</string>
+    <string name="lng">Lng</string>
+    <string name="permission_denied">Permission Denied!</string>
+</resources>
