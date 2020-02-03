@@ -4,17 +4,21 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.graphics.drawable.ColorDrawable;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
@@ -42,13 +46,18 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 import info.androidhive.barcode.BarcodeReader;
@@ -64,9 +73,10 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
     private HomeViewModel homeViewModel;
     private FragmentHomeBinding homeDataBindingUtil;
     private static final int REQUEST_LOCATION_PERMISSION = 201;
+    private static final int REQUEST_STORAGE_PERMISSION = 202;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
     private static final int CAMERA_REQUEST = 101;
-
+    private final String fileName="certificate.pdf";
     private static final String TAG = HomeFragment.class.getSimpleName();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -103,9 +113,87 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
                 }
             }
         });
+        homeDataBindingUtil.btnInstallation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                if (checkStoragePermissions()) {
+                    File fileBrochure = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
+                    if (!fileBrochure.exists()) {
+                        CopyAssetsbrochure();
+                    }
+                    File file = new File(Environment.getExternalStorageDirectory() + "/" + fileName);
+
+                    //Uri uri = Uri.fromFile(file);
+                    Uri photoURI = FileProvider.getUriForFile(Objects.requireNonNull(getContext()), getContext().getApplicationContext().getPackageName() + ".provider", file);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(photoURI, "application/pdf");
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    try {
+                        Objects.requireNonNull(getActivity()).startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        showToast("NO Pdf Viewer");
+                        //Toast.makeText(SecondActivity.this, "NO Pdf Viewer", Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                else
+                {
+                    requestStoragePermissions();
+                }
+            }
+        });
+
         return root;
     }
 
+    private void CopyAssetsbrochure() {
+        AssetManager assetManager = Objects.requireNonNull(getActivity()).getAssets();
+        String[] files = null;
+        try
+        {
+            files = assetManager.list("");
+        }
+        catch (IOException e)
+        {
+            Log.e("tag", e.getMessage());
+        }
+        for(int i=0; i<files.length; i++)
+        {
+            String fStr = files[i];
+            if(fStr.equalsIgnoreCase(fileName))
+            {
+                InputStream in = null;
+                OutputStream out = null;
+                try
+                {
+                    in = assetManager.open(files[i]);
+                    out = new FileOutputStream(Environment.getExternalStorageDirectory() + "/" + files[i]);
+                    copyFile(in, out);
+                    in.close();
+                    in = null;
+                    out.flush();
+                    out.close();
+                    out = null;
+                    break;
+                }
+                catch(Exception e)
+                {
+                    Log.e("tag", e.getMessage());
+                }
+            }
+        }
+    }
+
+    private void copyFile(InputStream in, OutputStream out) throws IOException {
+        byte[] buffer = new byte[1024];
+        int read;
+        while((read = in.read(buffer)) != -1){
+            out.write(buffer, 0, read);
+        }
+    }
 
     @Override
     public void onDropBoxScannerClick() {
@@ -152,7 +240,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+       // super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
             case REQUEST_CAMERA_PERMISSION:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
@@ -161,10 +249,20 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
                 } else {
                     showToast(Objects.requireNonNull(getActivity()).getResources().getString(R.string.permission_denied));
                 }
+                break;
             case REQUEST_LOCATION_PERMISSION:
 
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     showDialog();
+
+                } else {
+                    showToast(Objects.requireNonNull(getActivity()).getResources().getString(R.string.permission_denied));
+                }
+                break;
+            case REQUEST_STORAGE_PERMISSION:
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
 
                 } else {
                     showToast(Objects.requireNonNull(getActivity()).getResources().getString(R.string.permission_denied));
@@ -218,12 +316,25 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
         }
         return false;
     }
+    private boolean checkStoragePermissions() {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(getContext()), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED ) {
+            return true;
+        }
+        return false;
+    }
 
     private void requestPermissions() {
         ActivityCompat.requestPermissions(
                 Objects.requireNonNull(getActivity()),
                 new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
                 REQUEST_LOCATION_PERMISSION
+        );
+    }
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions(
+                Objects.requireNonNull(getActivity()),
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_STORAGE_PERMISSION
         );
     }
 

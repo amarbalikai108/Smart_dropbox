@@ -1,14 +1,21 @@
 package com.example.smartdropbox.home.view;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 
+import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 
+import com.example.smartdropbox.application.BaseActivity;
 import com.example.smartdropbox.home.adapter.DrawerAdapter;
 import com.example.smartdropbox.home.model.DrawerModel;
 import com.example.smartdropbox.R;
@@ -38,18 +45,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class HomeScreen extends AppCompatActivity {
+public class HomeScreen extends BaseActivity {
     private TextView appVersion,tvUserName;
     private int oldMenuPositin = 0;
+    private int REQUEST_CALL_PERMISSION=100;
     private int newMenuPosition = 0;
     private AppBarConfiguration mAppBarConfiguration;
     private String scannedBoxId = "";
+    private ImageView imgCall;
     private Util util;
     private DrawerAdapter recyclerAdapter;
 
@@ -77,11 +88,12 @@ public class HomeScreen extends AppCompatActivity {
 
     @SuppressLint("CutPasteId")
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home_screen);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
+        imgCall= findViewById(R.id.imgCall);
         setSupportActionBar(toolbar);
         sharedPreferencesImp=SmartDropbox.getInstance().getAppSharePreference();
         //toolbar.setVisibility(View.INVISIBLE);
@@ -97,10 +109,26 @@ public class HomeScreen extends AppCompatActivity {
         recyclerView = findViewById(R.id.list);
        updateDrawerName();
 
-        nav_item.add(new DrawerModel("Home"));
+        imgCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+               // Bundle bundle=new Bundle();
+                if(!checkPermissions())
+                {
+                    requestPermissions();
+                }
+                else {
+                    Intent intent = new Intent(Intent.ACTION_CALL);
+
+                    intent.setData(Uri.parse("tel:9561255943"));
+                    startActivity(intent);
+                }
+            }
+        });
+        nav_item.add(new DrawerModel(getResources().getString(R.string.menu_home)));
         nav_item.get(0).setIsSelected(true);
-        nav_item.add(new DrawerModel("Edit Profile"));
-        nav_item.add(new DrawerModel("Installation Manual"));
+        nav_item.add(new DrawerModel(getResources().getString(R.string.menuEditProfile)));
+        nav_item.add(new DrawerModel(getResources().getString(R.string.installation_manual)));
 
         //NavigationView navigationView = findViewById(R.id.nav_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -175,10 +203,43 @@ public class HomeScreen extends AppCompatActivity {
         mDrawerLayout.closeDrawers();
 
     }
+    private void requestPermissions() {
+        ActivityCompat.requestPermissions(
+                Objects.requireNonNull(this),
+                new String[]{Manifest.permission.CALL_PHONE},
+                REQUEST_CALL_PERMISSION
+        );
+    }
+    private boolean checkPermissions() {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(this), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        return false;
+    }
 
     public void updateDrawerName()
     {
         tvUserName.setText(sharedPreferencesImp.getUserName());
     }
+
+   /* @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if(requestCode!=REQUEST_CALL_PERMISSION)
+        {
+            showToast(Objects.requireNonNull(this).getResources().getString(R.string.permission_denied));
+        }*/
+
+        /*
+        switch (requestCode) {
+            case REQUEST_CALL_PERMISSION:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+                    showToast(Objects.requireNonNull(getActivity()).getResources().getString(R.string.permission_denied));
+                }
+
+        }*/
+    //}
 
 }
