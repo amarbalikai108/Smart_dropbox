@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SmartDropbox</string>
+    <string name="app_name">UPSDropBox</string>
     <string name="title_activity_home_screen">HomeScreen</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -54,4 +54,5 @@
     <string name="lat">Lat</string>
     <string name="lng">Lng</string>
     <string name="permission_denied">Permission Denied!</string>
+    <string name="dashboard">Dashboard</string>
 </resources>

@@ -22,6 +22,7 @@ import com.example.smartdropbox.R;
 import com.example.smartdropbox.application.BaseFragment;
 import com.example.smartdropbox.home.ui.home.HomeFragment;
 import com.example.smartdropbox.home.view.HomeScreen;
+import com.example.smartdropbox.utils.Constants;
 import com.google.android.gms.vision.barcode.Barcode;
 
 import java.util.List;
@@ -48,23 +49,29 @@ public class ScannerFragment extends BaseFragment implements BarcodeReader.Barco
 
     @Override
     public void onScanned(final Barcode barcode) {
-        barcodeReader.playBeep();
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        try {
+            barcodeReader.playBeep();
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-                Intent intent = new Intent();
-                intent.putExtra("scanData",barcode.displayValue);
-                intent.setAction("process_scanner_result");
-                Objects.requireNonNull(getActivity()).sendBroadcast(intent);
-                Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack("scanner", FragmentManager.POP_BACK_STACK_INCLUSIVE);
-            }
-        });
+                    Intent intent = new Intent();
+                    intent.putExtra(Constants.SCAN_DATA,barcode.displayValue);
+                    intent.setAction("process_scanner_result");
+                    Objects.requireNonNull(getActivity()).sendBroadcast(intent);
+                    Objects.requireNonNull(getActivity()).getSupportFragmentManager().popBackStack("scanner", FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                }
+            });
+        }catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+
     }
 
     @Override
     public void onScannedMultiple(List<Barcode> barcodes) {
-        showToast("Please show single barcode/QrCode");
+//        showToast("Please show single barcode/QrCode");
     }
 
     @Override

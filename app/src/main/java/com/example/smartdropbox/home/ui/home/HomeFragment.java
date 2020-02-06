@@ -36,6 +36,7 @@ import com.example.smartdropbox.application.BaseFragment;
 import com.example.smartdropbox.databinding.FragmentHomeBinding;
 import com.example.smartdropbox.home.view.HomeScreen;
 import com.example.smartdropbox.registration.model.RegistrationModel;
+import com.example.smartdropbox.utils.Constants;
 import com.example.smartdropbox.utils.Util;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -539,7 +540,7 @@ public class HomeFragment extends BaseFragment implements HomeFragmentViewListen
     public class AppBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            showScannedResult(intent.getStringExtra("scanData") != null ? intent.getStringExtra("scanData") : "");
+            showScannedResult(intent.getStringExtra(Constants.SCAN_DATA) != null ? intent.getStringExtra(Constants.SCAN_DATA) : "");
         }
     }
 

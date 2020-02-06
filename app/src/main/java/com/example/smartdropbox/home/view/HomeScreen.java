@@ -1,15 +1,17 @@
 package com.example.smartdropbox.home.view;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -21,47 +23,50 @@ import com.example.smartdropbox.home.model.DrawerModel;
 import com.example.smartdropbox.R;
 
 
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.example.smartdropbox.application.SmartDropbox;
 import com.example.smartdropbox.home.ui.ScannerFragment;
+import com.example.smartdropbox.home.ui.dashboard.DashboardFragment;
 import com.example.smartdropbox.home.ui.edit_Profile.EditProfileFragment;
 import com.example.smartdropbox.home.ui.home.HomeFragment;
-import com.example.smartdropbox.home.ui.installation_Manual.InstallationManualFragment;
 import com.example.smartdropbox.utils.SharedPreferencesImp;
 import com.example.smartdropbox.utils.Util;
-import com.google.android.material.navigation.NavigationView;
 
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
+import android.os.Environment;
 
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import static com.example.smartdropbox.utils.Constants.PDFFILELOCATION;
+
 public class HomeScreen extends BaseActivity {
-    private TextView appVersion,tvUserName;
+    private TextView appVersion, tvUserName;
     private int oldMenuPositin = 0;
-    private int REQUEST_CALL_PERMISSION=100;
+    private int REQUEST_CALL_PERMISSION = 100;
     private int newMenuPosition = 0;
     private AppBarConfiguration mAppBarConfiguration;
     private String scannedBoxId = "";
     private ImageView imgCall;
+    private static final int REQUEST_STORAGE_PERMISSION = 202;
     private Util util;
+    private int menuItemSelected = 0;
     private DrawerAdapter recyclerAdapter;
 
     public String getScannedBoxId() {
@@ -93,9 +98,9 @@ public class HomeScreen extends BaseActivity {
         setContentView(R.layout.activity_home_screen);
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
-        imgCall= findViewById(R.id.imgCall);
+        imgCall = findViewById(R.id.imgCall);
         setSupportActionBar(toolbar);
-        sharedPreferencesImp=SmartDropbox.getInstance().getAppSharePreference();
+        sharedPreferencesImp = SmartDropbox.getInstance().getAppSharePreference();
         //toolbar.setVisibility(View.INVISIBLE);
         //toolbar.getBackground().setAlpha(0);
 
@@ -107,21 +112,16 @@ public class HomeScreen extends BaseActivity {
         appVersion.setText(" " + SmartDropbox.appVersionName);
         mDrawerLayout = findViewById(R.id.drawer_layout);
         recyclerView = findViewById(R.id.list);
-       updateDrawerName();
+        updateDrawerName();
 
         imgCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-               // Bundle bundle=new Bundle();
-                if(!checkPermissions())
-                {
+                if (!checkPermissions()) {
                     requestPermissions();
-                }
-                else {
-                    Intent intent = new Intent(Intent.ACTION_CALL);
+                } else {
+                    callConfirmationDialog();
 
-                    intent.setData(Uri.parse("tel:9561255943"));
-                    startActivity(intent);
                 }
             }
         });
@@ -129,6 +129,7 @@ public class HomeScreen extends BaseActivity {
         nav_item.get(0).setIsSelected(true);
         nav_item.add(new DrawerModel(getResources().getString(R.string.menuEditProfile)));
         nav_item.add(new DrawerModel(getResources().getString(R.string.installation_manual)));
+        nav_item.add(new DrawerModel(getResources().getString(R.string.dashboard)));
 
         //NavigationView navigationView = findViewById(R.id.nav_view);
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
@@ -136,15 +137,22 @@ public class HomeScreen extends BaseActivity {
         recyclerAdapter = new DrawerAdapter(this, nav_item, new DrawerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                newMenuPosition = position;
-                selectItem(position);
-                nav_item.get(oldMenuPositin).setIsSelected(false);
-                recyclerAdapter.notifyItemChanged(oldMenuPositin);
-                nav_item.get(newMenuPosition).setIsSelected(true);
-                oldMenuPositin = newMenuPosition;
+                if (nav_item.get(position).getMenuName().equals(getResources().getString(R.string.installation_manual))) {
+                    selectItem(position);
 
-                recyclerAdapter.notifyItemChanged(newMenuPosition);
+                }
+                else
+                {
+                    newMenuPosition = position;
+                    selectItem(position);
+                    nav_item.get(oldMenuPositin).setIsSelected(false);
+                    recyclerAdapter.notifyItemChanged(oldMenuPositin);
+                    nav_item.get(newMenuPosition).setIsSelected(true);
+                    oldMenuPositin = newMenuPosition;
 
+                    recyclerAdapter.notifyItemChanged(newMenuPosition);
+
+                }
             }
         });
         recyclerView.setAdapter(recyclerAdapter);
@@ -180,29 +188,105 @@ public class HomeScreen extends BaseActivity {
         Bundle args = new Bundle();
         switch (possition) {
             case 0:
+
                 fragment = new HomeFragment();
+                showFragment(fragment);
                 break;
             case 1:
                 fragment = new EditProfileFragment();
-
+                showFragment(fragment);
                 break;
             case 2:
-                fragment = new InstallationManualFragment();
-             /*   args.putString(FragmentThree.ITEM_NAME, dataList.get(possition)
-                        .getItemName());
-                args.putInt(FragmentThree.IMAGE_RESOURCE_ID, dataList.get(possition)
-                        .getImgResID());*/
+                if (!checkStoragePermissions()) {
+                    requestStoragePermissions();
+                }
+                else
+                {
+                    copyRaw();
+                    CopyReadAssets();
+                }
                 break;
-
+            case 3:
+                fragment = new DashboardFragment();
+                showFragment(fragment);
+                break;
             default:
                 break;
         }
+    }
+    @SuppressLint("WorldReadableFiles")
+    private void CopyReadAssets()
+    {
 
 
+        File file1 = new File(PDFFILELOCATION);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        intent.setDataAndType(
+             FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".provider", file1), "application/pdf");
+                /*Uri.parse("file://" + getFilesDir() + "/certificate.pdf"),
+                "application/pdf");*/
+
+        startActivity(intent);
+    }
+
+    void copyRaw() {
+        final int mSongs =R.raw.certificate;
+        //for (int i = 0; i < mSongs.length; i++) {
+            try {
+                final File newFile = new File(Environment.getExternalStorageDirectory() + "/UPS");
+                if(!newFile.exists()) {
+                    newFile.mkdir();
+                }
+                String path = Environment.getExternalStorageDirectory() + "/UPS";
+                File dir = new File(path);
+                if (dir.mkdirs() || dir.isDirectory()) {
+                    String str_song_name = "Certificate" + ".pdf";
+                    CopyRAWtoSDCard(mSongs, path + File.separator + str_song_name);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+       // }
+    }
+
+
+    private void CopyRAWtoSDCard(int id, String path) throws IOException {
+        InputStream in = getResources().openRawResource(id);
+        FileOutputStream out = new FileOutputStream(path);
+        byte[] buff = new byte[1024];
+        int read = 0;
+        try {
+            while ((read = in.read(buff)) > 0) {
+                out.write(buff, 0, read);
+            }
+        } finally {
+            in.close();
+            out.close();
+        }
+    }
+
+    private void showFragment(Fragment fragment)
+    {
         getSupportFragmentManager().beginTransaction().replace(R.id.nav_host_fragment, Objects.requireNonNull(fragment)).commit();
         mDrawerLayout.closeDrawers();
-
     }
+
+    private void requestStoragePermissions() {
+        ActivityCompat.requestPermissions(
+                Objects.requireNonNull(this),
+                new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_STORAGE_PERMISSION
+        );
+    }
+
+    private boolean checkStoragePermissions() {
+        if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(this), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        return false;
+    }
+
     private void requestPermissions() {
         ActivityCompat.requestPermissions(
                 Objects.requireNonNull(this),
@@ -210,6 +294,7 @@ public class HomeScreen extends BaseActivity {
                 REQUEST_CALL_PERMISSION
         );
     }
+
     private boolean checkPermissions() {
         if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(this), Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
             return true;
@@ -217,9 +302,34 @@ public class HomeScreen extends BaseActivity {
         return false;
     }
 
-    public void updateDrawerName()
-    {
+    public void updateDrawerName() {
         tvUserName.setText(sharedPreferencesImp.getUserName());
+    }
+
+    void callConfirmationDialog() //confirmation
+    {
+        DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switch (which) {
+                    case DialogInterface.BUTTON_POSITIVE:
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+
+                        intent.setData(Uri.parse("tel:9561255943"));
+                        startActivity(intent);
+                        break;
+
+                    case DialogInterface.BUTTON_NEGATIVE:
+
+                        break;
+                }
+            }
+        };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Do you want to call?").setPositiveButton("Yes", dialogClickListener)
+                .setNegativeButton("No", dialogClickListener).show();
+
     }
 
    /* @Override
@@ -241,5 +351,7 @@ public class HomeScreen extends BaseActivity {
 
         }*/
     //}
+
+
 
 }

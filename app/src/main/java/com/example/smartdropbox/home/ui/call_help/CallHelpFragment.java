@@ -59,7 +59,6 @@ public class CallHelpFragment extends Fragment {
                         String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
             }
         });
-
         return root;
     }
 

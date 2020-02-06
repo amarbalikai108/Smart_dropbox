@@ -1,14 +1,14 @@
-package com.example.smartdropbox.home.ui.installation_Manual;
+package com.example.smartdropbox.home.ui.dashboard;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class InstallationManualModel extends ViewModel {
+public class DashboardModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
-    public InstallationManualModel() {
+    public DashboardModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is slideshow fragment");
     }

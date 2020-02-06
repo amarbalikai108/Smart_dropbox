@@ -19,9 +19,9 @@
 
     <fragment
         android:id="@+id/nav_installation_manual"
-        android:name="com.example.smartdropbox.home.ui.installation_Manual.InstallationManualFragment"
+        android:name="com.example.smartdropbox.home.ui.dashboard.DashboardFragment"
         android:label="@string/menu_installation_manual"
-        tools:layout="@layout/fragment_installation_manual" />
+        tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/nav_call_help"

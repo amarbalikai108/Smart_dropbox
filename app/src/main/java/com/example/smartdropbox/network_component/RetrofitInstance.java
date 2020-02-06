@@ -1,5 +1,6 @@
 package com.example.smartdropbox.network_component;
 
+import com.example.smartdropbox.home.view.HomeScreen;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -35,10 +36,10 @@ public class RetrofitInstance
                 return chain.proceed(request);
             }
         });
+
          retrofit = new Retrofit.Builder().addConverterFactory(GsonConverterFactory.create(gson)).baseUrl(baseUrl).client(httpClient.build()).build();
         return retrofit;
 
     }
-
 
 }
